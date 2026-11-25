@@ -1,0 +1,66 @@
+[package]
+name = "weirdnet-vault"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+description = "Weirdnet vault: an encrypted secret and credential store with scoped access, per-identity grants, environments, rotation without downtime and a hash-chained audit log."
+authors = ["Weird Brains LLC"]
+license = "BSD-3-Clause"
+repository = "https://github.com/WeirdBrains/weirdnet-vault"
+documentation = "https://docs.rs/weirdnet-vault"
+readme = "README.md"
+keywords = ["vault", "secrets", "credentials", "encryption", "weirdnet"]
+categories = ["cryptography", "authentication"]
+include = ["src/**", "examples/**", "README.md", "SECURITY.md", "CHANGELOG.md", "LICENSE"]
+
+[features]
+default = ["tokio", "vendored-openssl"]
+# Builds SQLCipher's OpenSSL from source (no system OpenSSL needed).
+vendored-openssl = ["weirdnet-storage/vendored-openssl"]
+# `AsyncVault`: every call on Tokio's blocking pool.
+tokio = ["dep:tokio"]
+# `KeychainStore`: macOS Keychain, Windows Credential Manager, Secret Service elsewhere.
+keychain = [
+  "dep:keyring-core",
+  "dep:apple-native-keyring-store",
+  "dep:windows-native-keyring-store",
+  "dep:zbus-secret-service-keyring-store",
+]
+# weirdnet-sync `SecretStore` interop (pulls in weirdnet-net).
+sync = ["dep:weirdnet-sync"]
+# `AccessAuthorizer` over weirdnet-access `enforce::decide`.
+access = ["dep:weirdnet-access"]
+# `VaultTools`: metadata-only weirdnet-mcp tools.
+mcp = ["dep:weirdnet-mcp"]
+
+[dependencies]
+weirdnet-keys = "0.1.2"
+weirdnet-storage = { version = "0.1.1", default-features = false }
+blake3 = "1"
+hex = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+uuid = { version = "1", features = ["v4"] }
+zeroize = "1"
+tokio = { version = "1", features = ["rt"], optional = true }
+keyring-core = { version = "1", optional = true }
+weirdnet-sync = { version = "0.8", optional = true }
+weirdnet-access = { version = "0.1.2", optional = true }
+weirdnet-mcp = { version = "0.6.1", optional = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+apple-native-keyring-store = { version = "1", features = ["keychain"], optional = true }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-native-keyring-store = { version = "1", optional = true }
+
+[target.'cfg(all(unix, not(any(target_os = "macos", target_os = "ios", target_os = "android"))))'.dependencies]
+zbus-secret-service-keyring-store = { version = "1", features = ["crypto-rust"], optional = true }
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+[package.metadata.docs.rs]
+features = ["tokio", "keychain", "access", "mcp"]
