@@ -2,6 +2,21 @@
 
 Running notes for [weirdnet-vault](https://github.com/WeirdBrains/weirdnet-vault), newest first.
 
+## 2026-11-25: released v0.1.0
+
+- What changed: the first release, cut with `scripts/weirdnet_release.py cut --minor` from
+  `f976413`: `release: v0.1.0` ([`b50c555`](https://github.com/WeirdBrains/weirdnet-vault/commit/b50c5551c7a6aa4d32c3ca87755d2b9aff9765aa)),
+  tag `v0.1.0`, published to [crates.io](https://crates.io/crates/weirdnet-vault/0.1.0);
+  [docs.rs](https://docs.rs/weirdnet-vault/0.1.0) built it.
+- Checks: CI green on `f976413` and `b50c555` (Linux checks, macOS and Windows keychain
+  jobs); the release script's fmt, clippy, test and doc checks; the
+  [weirdnet-vault page](https://net.weirdbrains.com/crates/vault) example built and ran against
+  0.1.0 from crates.io.
+- Not tested: the native keychains against a real OS store (CI builds and tests the keychain
+  feature on macOS and Windows with the mock store only).
+- Left: nothing for this release.
+- Next: nothing planned.
+
 ## 2026-11-25: initial crate, unreleased
 
 - What changed: the [design](docs/design/vault.md) and the first implementation. Sealed
